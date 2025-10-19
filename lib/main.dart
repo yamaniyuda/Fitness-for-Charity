@@ -1,10 +1,58 @@
 import 'package:flutter/material.dart';
 import 'package:o3d/o3d.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:path/path.dart';
 
 import 'inverted_circle_clipper.dart';
 
-void main() {
+final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
+final GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DBHelper.instance.init();
   runApp(const MyApp());
+}
+
+class DBHelper {
+  DBHelper._privateConstructor();
+  static final DBHelper instance = DBHelper._privateConstructor();
+
+  Database? _db;
+
+  Future<void> init() async {
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'auth.db');
+    _db = await openDatabase(path, version: 1, onCreate: (db, version) async {
+      await db.execute('''
+        CREATE TABLE users(
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          email TEXT UNIQUE,
+          password TEXT
+        )
+      ''');
+    });
+  }
+
+  Future<bool> createUser(String email, String password) async {
+    try {
+      final id = await _db!.insert('users', {'email': email, 'password': password});
+      return id > 0;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  Future<bool> userExists(String email) async {
+    final res = await _db!.query('users', where: 'email = ?', whereArgs: [email]);
+    return res.isNotEmpty;
+  }
+
+  Future<bool> validateUser(String email, String password) async {
+    final res = await _db!.query('users',
+        where: 'email = ? AND password = ?', whereArgs: [email, password]);
+    return res.isNotEmpty;
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -13,16 +61,167 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navKey,
+      scaffoldMessengerKey: messengerKey,
       title: 'UI 3D flutter',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const LoginScreen(),
     );
   }
 }
 
+// Simple Login Screen
+class LoginScreen extends StatefulWidget {
+  const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final _emailC = TextEditingController();
+  final _passC = TextEditingController();
+  bool _loading = false;
+
+  void _login() async {
+    final email = _emailC.text.trim();
+    final pass = _passC.text;
+
+    if (email.isEmpty || pass.isEmpty) {
+      messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Enter email and password')));
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() => _loading = true);
+
+    try {
+      final ok = await DBHelper.instance.validateUser(email, pass);
+
+      if (!mounted) return;
+      setState(() => _loading = false);
+
+      if (ok) {
+        navKey.currentState?.pushReplacement(MaterialPageRoute(builder: (_) => const MyHomePage()));
+      } else {
+        messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Invalid credentials')));
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
+      messengerKey.currentState?.showSnackBar(SnackBar(content: Text('Login error: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Login')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(controller: _emailC, decoration: const InputDecoration(labelText: 'Email')),
+            const SizedBox(height: 12),
+            TextField(controller: _passC, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _loading ? null : _login,
+              child: _loading ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Login'),
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () => navKey.currentState?.push(MaterialPageRoute(builder: (_) => const SignUpScreen())),
+              child: const Text('Don\'t have an account? Sign up'),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Simple Sign Up Screen
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final _emailC = TextEditingController();
+  final _passC = TextEditingController();
+  final _confirmC = TextEditingController();
+  bool _loading = false;
+
+  void _signup() async {
+    final email = _emailC.text.trim();
+    final pass = _passC.text;
+    final conf = _confirmC.text;
+
+    if (email.isEmpty || pass.isEmpty) {
+      messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Enter email and password')));
+      return;
+    }
+    if (pass != conf) {
+      messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      return;
+    }
+
+    if (!mounted) return;
+    setState(() => _loading = true);
+
+    try {
+      final exists = await DBHelper.instance.userExists(email);
+      if (exists) {
+        if (!mounted) return;
+        setState(() => _loading = false);
+        messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Email already registered')));
+        return;
+      }
+
+      final created = await DBHelper.instance.createUser(email, pass);
+      if (!mounted) return;
+      setState(() => _loading = false);
+
+      if (created) {
+        messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Account created. Please log in.')));
+        navKey.currentState?.pop();
+      } else {
+        messengerKey.currentState?.showSnackBar(const SnackBar(content: Text('Failed to create account')));
+      }
+    } catch (e) {
+      if (mounted) setState(() => _loading = false);
+      messengerKey.currentState?.showSnackBar(SnackBar(content: Text('Sign up error: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Sign up')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: [
+            TextField(controller: _emailC, decoration: const InputDecoration(labelText: 'Email')),
+            const SizedBox(height: 12),
+            TextField(controller: _passC, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+            const SizedBox(height: 12),
+            TextField(controller: _confirmC, decoration: const InputDecoration(labelText: 'Confirm password'), obscureText: true),
+            const SizedBox(height: 20),
+            ElevatedButton(onPressed: _loading ? null : _signup, child: _loading ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Sign up')),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// Existing app home (keeps your original MyHomePage UI)
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
 
@@ -38,7 +237,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-
     final height = MediaQuery.sizeOf(context).height;
 
     return Scaffold(
@@ -356,3 +554,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+// ...existing code...

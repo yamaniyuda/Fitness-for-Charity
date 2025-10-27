@@ -1,4 +1,4 @@
-name: ui_3d_flutter
+name: project_3d
 description: Flutter 3D beautiful ui using O3D dependency.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.

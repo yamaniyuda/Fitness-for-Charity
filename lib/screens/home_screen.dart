@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:o3d/o3d.dart';
+import 'package:project_3d/screens/settings_screen.dart';
 
 import '../inverted_circle_clipper.dart';
 
@@ -44,55 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: EdgeInsets.fromLTRB(12, height * 0.8, 12, 100),
                   itemCount: 100,
                   itemBuilder: (context, index) => Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(32.0),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Image.asset('assets/image1.jpg',
-                          fit: BoxFit.cover,
-                          width: 70,
-                          height: 70,
-                        ),
-                        const Expanded(
-                          child: Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('A simple way to stay healthy',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text('Dr Babak',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          ),
-                        ),
-
-                        const Icon(Icons.location_on,
-                          color: Colors.red,
-                        )
-
-                      ],
-                    ),
-                  ),
-                ),),
-                ListView.builder(
-                  padding: EdgeInsets.fromLTRB(12, height * 0.8, 12, 100),
-                  itemCount: 100,
-                  itemBuilder: (context, index) => Card(
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Image.asset('assets/image2.jpg',
+                          Image.asset(
+                            'assets/image1.jpg',
                             fit: BoxFit.cover,
                             width: 70,
                             height: 70,
@@ -103,41 +62,90 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text('10:24',
-                                    style: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 12
-                                    ),
-                                  ),
-                                  Text('Morning walk',
+                                  Text(
+                                    'A simple way to stay healthy',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
-                                  Text('2 km in 30min',
+                                  Text(
+                                    'Dr Babak',
                                     style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: 12
+                                      fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-
-                          const Icon(Icons.directions_walk_rounded,
+                          const Icon(
+                            Icons.location_on,
                             color: Colors.red,
                           )
-
                         ],
                       ),
                     ),
-                  ),),
-                ClipPath(
-                  clipper: InvertedCircleClipper(),
-                  child: Container(
-                    color: Colors.white,
                   ),
+                ),
+                ListView.builder(
+                  padding: EdgeInsets.fromLTRB(12, height * 0.8, 12, 100),
+                  itemCount: 100,
+                  itemBuilder: (context, index) => Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Image.asset(
+                            'assets/image2.jpg',
+                            fit: BoxFit.cover,
+                            width: 70,
+                            height: 70,
+                          ),
+                          const Expanded(
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '10:24',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                  ),
+                                  Text(
+                                    'Morning walk',
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    '2 km in 30min',
+                                    style: TextStyle(
+                                        color: Colors.grey, fontSize: 12),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                          const Icon(
+                            Icons.directions_walk_rounded,
+                            color: Colors.red,
+                          )
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Column(
+                  children: [
+                    ClipPath(
+                      clipper: InvertedCircleClipper(),
+                      child: Container(
+                        color: Colors.red,
+                      ),
+                    )
+                  ],
                 )
               ],
             ),
@@ -200,7 +208,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         children: [
                           Padding(
                             padding: EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Icon(Icons.do_not_step, color: Colors.purple),
+                            child:
+                                Icon(Icons.do_not_step, color: Colors.purple),
                           ),
                           Expanded(
                               child: Column(
@@ -294,6 +303,21 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ],
+              ),
+            ),
+            Positioned(
+              top: 16,
+              right: 16,
+              child: IconButton(
+                icon: const Icon(Icons.settings),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
               ),
             )
           ],

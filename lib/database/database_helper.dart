@@ -1,73 +1,96 @@
+import 'dart:io' show Platform;
 import 'package:flutter/foundation.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 
 class DBHelper {
-  DBHelper._privateConstructor();
-  static final DBHelper instance = DBHelper._privateConstructor();
+  DBHelper._();
+  static final DBHelper instance = DBHelper._();
 
   Database? _db;
 
-  Future<Database> get db async {
-    if (_db != null) {
-      return _db!;
-    }
-    _db = await init();
+  Future<Database> get database async {
+    _db ??= await _initDatabase();
     return _db!;
   }
 
-  Future<Database> init() async {
+  Future<Database> _initDatabase() async {
     if (kIsWeb) {
-      final factory = databaseFactoryFfiWeb;
-      return await factory.openDatabase('auth.db',
-          options: OpenDatabaseOptions(
-            version: 1,
-            onCreate: (db, version) async {
-              await db.execute('''
-          CREATE TABLE users(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE,
-            password TEXT
-          )
-        ''');
-            },
-          ));
+      // ✅ Web
+      databaseFactory = databaseFactoryFfiWeb;
+      return await databaseFactory.openDatabase(
+        'auth_web.db',
+        options: OpenDatabaseOptions(
+          version: 1,
+          onCreate: _onCreate,
+        ),
+      );
+    } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
+      // ✅ Desktop
+      sqfliteFfiInit();
+      databaseFactory = databaseFactoryFfi;
+      final dbPath = await databaseFactory.getDatabasesPath();
+      return await databaseFactory.openDatabase(
+        join(dbPath, 'auth_desktop.db'),
+        options: OpenDatabaseOptions(
+          version: 1,
+          onCreate: _onCreate,
+        ),
+      );
     } else {
+      // ✅ Android / iOS
       final dbPath = await getDatabasesPath();
-      final path = join(dbPath, 'auth.db');
-      return await openDatabase(path, version: 1, onCreate: (db, version) async {
-        await db.execute('''
-          CREATE TABLE users(
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            email TEXT UNIQUE,
-            password TEXT
-          )
-        ''');
-      });
+      return await openDatabase(
+        join(dbPath, 'auth.db'),
+        version: 1,
+        onCreate: _onCreate,
+      );
     }
+  }
+
+  Future<void> _onCreate(Database db, int version) async {
+    await db.execute('''
+      CREATE TABLE users(
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        email TEXT UNIQUE,
+        password TEXT
+      )
+    ''');
   }
 
   Future<bool> createUser(String email, String password) async {
     try {
-      final dbClient = await db;
-      final id = await dbClient.insert('users', {'email': email, 'password': password});
+      final dbClient = await database;
+      final id = await dbClient.insert('users', {
+        'email': email,
+        'password': password,
+      });
       return id > 0;
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Error createUser: $e');
       return false;
     }
   }
 
   Future<bool> userExists(String email) async {
-    final dbClient = await db;
-    final res = await dbClient.query('users', where: 'email = ?', whereArgs: [email]);
-    return res.isNotEmpty;
+    final dbClient = await database;
+    final result = await dbClient.query(
+      'users',
+      where: 'email = ?',
+      whereArgs: [email],
+    );
+    return result.isNotEmpty;
   }
 
   Future<bool> validateUser(String email, String password) async {
-    final dbClient = await db;
-    final res = await dbClient.query('users',
-        where: 'email = ? AND password = ?', whereArgs: [email, password]);
-    return res.isNotEmpty;
+    final dbClient = await database;
+    final result = await dbClient.query(
+      'users',
+      where: 'email = ? AND password = ?',
+      whereArgs: [email, password],
+    );
+    return result.isNotEmpty;
   }
 }

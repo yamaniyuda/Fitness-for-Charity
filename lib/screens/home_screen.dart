@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 
 import 'package:o3d/o3d.dart';
+import 'package:project_3d/provider/gender_provider.dart';
 import 'package:project_3d/screens/settings_screen.dart';
+import 'package:project_3d/services/weather_service.dart';
+import 'package:provider/provider.dart';
+import 'package:project_3d/utils/weather_icons.dart';
 
 import '../inverted_circle_clipper.dart';
 
@@ -19,9 +23,45 @@ class _HomeScreenState extends State<HomeScreen> {
   PageController textsPageController = PageController();
   int page = 0;
 
+
+  Map<String, dynamic>? _weather;
+  bool _loadingWeather = true;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchWeather();
+  }
+
+
+  Future<void> _fetchWeather() async {
+    try {
+      final svc = WeatherService();
+      final data = await svc.getWeather();
+      setState(() {
+        _weather = data;
+        _loadingWeather = false;
+      });
+    } catch (_) {
+      setState(() {
+        _weather = null;
+        _loadingWeather = false;
+      });
+    }
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.sizeOf(context).height;
+
+    final genderProvider = Provider.of<GenderProvider>(context);
+
+    final String modelPath =
+        genderProvider.gender == "male"
+            ? 'assets/male_basic_walk_30_frames_loop.glb'
+            : 'assets/disney_style_character.glb';
 
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
@@ -29,13 +69,16 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Stack(
           children: [
             O3D(
-              src: 'assets/disney_style_character.glb',
+              key: ValueKey(modelPath),
+              src: modelPath,
               controller: o3dController,
               ar: false,
               autoPlay: true,
               autoRotate: false,
               cameraControls: false,
-              cameraTarget: CameraTarget(-.25, 1.5, 1.5),
+              cameraTarget: genderProvider.gender == 'male'
+                  ? CameraTarget(-.25, 1.5, 0)
+                  : CameraTarget(-.25, 1.5, 1.5),
               cameraOrbit: CameraOrbit(0, 90, 1),
             ),
             PageView(
@@ -137,16 +180,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ),
-                Column(
-                  children: [
-                    ClipPath(
-                      clipper: InvertedCircleClipper(),
-                      child: Container(
-                        color: Colors.red,
-                      ),
-                    )
-                  ],
-                )
+                ClipPath(
+                    clipper: InvertedCircleClipper(),
+                    child: Container(
+                      color: Colors.white,
+                    ),
+                  )
               ],
             ),
             Container(
@@ -249,37 +288,97 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  Column(
-                    children: [
-                      const SizedBox(
-                        width: double.infinity,
-                        child: FittedBox(
-                          fit: BoxFit.fitWidth,
-                          child: Text("Journal"),
-                        ),
-                      ),
-                      SizedBox(
-                        width: double.infinity,
-                        child: Row(
-                          children: [
-                            Transform.translate(
-                                offset: const Offset(0, 20),
-                                child: const Text("<")),
-                            const Expanded(
+
+
+                  Builder(
+                    builder: (context) {
+                      if (_loadingWeather) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
+
+                      if (_weather == null) {
+                        return const Center(child: Text('Failed to load weather'));
+                      }
+
+                      final temp = _weather!['temperature'];
+                      final wind = _weather!['windspeed'];
+                      final code = _weather!['weathercode'];
+
+                      return Column(
+                        children: [
+                            SizedBox(
+                              width: double.infinity,
                               child: FittedBox(
                                 fit: BoxFit.fitWidth,
-                                child: Text("12"),
+                                child: Text(
+                                   "${temp?.toStringAsFixed(0) ?? temp}°C",
+                                ),
                               ),
                             ),
-                          ],
-                        ),
-                      ),
-                      const Text(
-                        "July 2020",
-                        style: TextStyle(fontSize: 12, color: Colors.grey),
-                      ),
-                    ],
+                            SizedBox(
+                              width: double.infinity,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Icon(iconFromWeatherCode(code), size: 18, color: Colors.blueGrey),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: FittedBox(
+                                      fit: BoxFit.fitWidth,
+                                      child: Text(
+                                        "Wind ${wind?.toStringAsFixed(0) ?? wind} km/h",
+                                        style: const TextStyle(fontSize: 12, color: Colors.grey),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                              const SizedBox(height: 6),
+
+                            // Keterangan kecil di bawah (kode cuaca)
+                            Text(
+                              "Code $code",
+                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                        ],
+                      );
+                    },
                   ),
+
+                  // Column(
+                  //   children: [
+                  //     const SizedBox(
+                  //       width: double.infinity,
+                  //       child: FittedBox(
+                  //         fit: BoxFit.fitWidth,
+                  //         child: Text("Journal"),
+                  //       ),
+                  //     ),
+                  //     SizedBox(
+                  //       width: double.infinity,
+                  //       child: Row(
+                  //         children: [
+                  //           Transform.translate(
+                  //               offset: const Offset(0, 20),
+                  //               child: const Text("<")),
+                  //           const Expanded(
+                  //             child: FittedBox(
+                  //               fit: BoxFit.fitWidth,
+                  //               child: Text("12"),
+                  //             ),
+                  //           ),
+                  //         ],
+                  //       ),
+                  //     ),
+                  //     const Text(
+                  //       "July 2020",
+                  //       style: TextStyle(fontSize: 12, color: Colors.grey),
+                  //     ),
+                  //   ],
+                  // ),
+
+
                   const Column(
                     children: [
                       SizedBox(
@@ -340,8 +439,12 @@ class _HomeScreenState extends State<HomeScreen> {
               o3dController.cameraTarget(0, 1.8, 0);
               o3dController.cameraOrbit(-90, 90, 1.5);
             } else if (page == 2) {
-              o3dController.cameraTarget(0, 3, 0);
-              o3dController.cameraOrbit(0, 90, -3);
+              if (genderProvider.gender == 'male') {
+
+              } else {
+                o3dController.cameraTarget(0, 3, 0);
+                o3dController.cameraOrbit(0, 90, -3);
+              }
             }
 
             setState(() {

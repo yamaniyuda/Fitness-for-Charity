@@ -1,44 +1,18 @@
 import 'package:flutter/material.dart';
+
 import 'package:o3d/o3d.dart';
 
-import 'inverted_circle_clipper.dart';
-import 'screens/login_screen.dart';
+import '../inverted_circle_clipper.dart';
 
-final GlobalKey<NavigatorState> navKey = GlobalKey<NavigatorState>();
-final GlobalKey<ScaffoldMessengerState> messengerKey = GlobalKey<ScaffoldMessengerState>();
-
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// Existing app home (keeps your original HomeScreen UI)
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      navigatorKey: navKey,
-      scaffoldMessengerKey: messengerKey,
-      title: 'UI 3D flutter',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const LoginScreen(),
-    );
-  }
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-// Existing app home (keeps your original MyHomePage UI)
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _HomeScreenState extends State<HomeScreen> {
   O3DController o3dController = O3DController();
   PageController mainPageController = PageController();
   PageController textsPageController = PageController();

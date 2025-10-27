@@ -18,7 +18,6 @@ class DBHelper {
 
   Future<Database> _initDatabase() async {
     if (kIsWeb) {
-      // ✅ Web
       databaseFactory = databaseFactoryFfiWeb;
       return await databaseFactory.openDatabase(
         'auth_web.db',
@@ -28,7 +27,6 @@ class DBHelper {
         ),
       );
     } else if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
-      // ✅ Desktop
       sqfliteFfiInit();
       databaseFactory = databaseFactoryFfi;
       final dbPath = await databaseFactory.getDatabasesPath();
@@ -40,7 +38,6 @@ class DBHelper {
         ),
       );
     } else {
-      // ✅ Android / iOS
       final dbPath = await getDatabasesPath();
       return await openDatabase(
         join(dbPath, 'auth.db'),

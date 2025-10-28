@@ -1,4 +1,4 @@
-name: ui_3d_flutter
+name: project_3d
 description: Flutter 3D beautiful ui using O3D dependency.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -30,12 +30,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  crypto: ^3.0.3
   cupertino_icons: ^1.0.2
   o3d: ^3.1.3
   percent_indicator: ^4.2.5
   sqflite: ^2.4.2
   path: ^1.9.1
+  sqflite_common_ffi_web: ^0.4.3+1
+  dropdown_button2: ^2.3.9
+
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,3 @@
-// lib/models/card_item.dart
 class CardItem {
   final int? id;
   final String title;
@@ -54,4 +53,23 @@ class CardItem {
         authorName: m['author_name'] as String?,
         categoryName: m['category_name'] as String?,
       );
+
+  Map<String, dynamic> toMap() {
+    return {
+      if (id != null) 'id': id,
+      'title': title,
+      'subtitle': subtitle,
+      'body': body,
+      'imageUrl': imageUrl,
+      'event_date': eventDate?.millisecondsSinceEpoch,
+      'latitude': latitude,
+      'longitude': longitude,
+      'target_donation': targetDonation,
+      'collected_donation': collectedDonation,
+      'favorite': favorite ? 1 : 0,
+      'created_at': createdAt?.millisecondsSinceEpoch,
+      'author_id': authorId,
+      'category_id': categoryId,
+    };
+  }
 }

@@ -71,17 +71,20 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _insertSampleData() async {
-    await DBHelper.instance.insertAuthor({'name': 'Dr Babak', 'avatar': 'assets/avatar1.png'});
+    await DBHelper.instance
+        .insertAuthor({'name': 'Dr Babak', 'avatar': 'assets/avatar1.png'});
     final authorId = await DBHelper.instance.getAuthorIdByName('Dr Babak') ?? 1;
 
     int catRunId = await DBHelper.instance.getCategoryIdByName('Charity Run') ??
         await DBHelper.instance.insertCategory({'name': 'Charity Run'});
 
-    int catYogaId = await DBHelper.instance.getCategoryIdByName('Charity Yoga') ??
-        await DBHelper.instance.insertCategory({'name': 'Charity Yoga'});
+    int catYogaId =
+        await DBHelper.instance.getCategoryIdByName('Charity Yoga') ??
+            await DBHelper.instance.insertCategory({'name': 'Charity Yoga'});
 
-    int catWalkId = await DBHelper.instance.getCategoryIdByName('Charity Walk') ??
-        await DBHelper.instance.insertCategory({'name': 'Charity Walk'});
+    int catWalkId =
+        await DBHelper.instance.getCategoryIdByName('Charity Walk') ??
+            await DBHelper.instance.insertCategory({'name': 'Charity Walk'});
 
     final now = DateTime.now().millisecondsSinceEpoch;
 
@@ -89,9 +92,11 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'title': 'Charity Run 5K for Education',
         'subtitle': 'Run and raise funds for local schools',
-        'body': 'A fun community run for all ages. All fees will be donated to children’s education.',
+        'body':
+            'A fun community run for all ages. All fees will be donated to children’s education.',
         'imageUrl': 'assets/charity-run.jpg',
-        'event_date': DateTime.now().add(const Duration(days: 5)).millisecondsSinceEpoch,
+        'event_date':
+            DateTime.now().add(const Duration(days: 5)).millisecondsSinceEpoch,
         'target_donation': 5000000,
         'collected_donation': 2000000,
         'created_at': now,
@@ -101,9 +106,11 @@ class _HomeScreenState extends State<HomeScreen> {
       {
         'title': 'Charity Yoga for Wellness',
         'subtitle': 'Breathe. Stretch. Give.',
-        'body': 'Morning yoga session to promote mental health awareness. All proceeds go to mental health charity.',
+        'body':
+            'Morning yoga session to promote mental health awareness. All proceeds go to mental health charity.',
         'imageUrl': 'assets/yoga_event.jfif',
-        'event_date': DateTime.now().add(const Duration(days: 7)).millisecondsSinceEpoch,
+        'event_date':
+            DateTime.now().add(const Duration(days: 7)).millisecondsSinceEpoch,
         'target_donation': 3000000,
         'collected_donation': 1500000,
         'created_at': now,
@@ -115,7 +122,8 @@ class _HomeScreenState extends State<HomeScreen> {
         'subtitle': 'Every step brings water to villages',
         'body': 'Join our 3km charity walk to support clean water projects.',
         'imageUrl': 'assets/fun_walk.jfif',
-        'event_date': DateTime.now().add(const Duration(days: 10)).millisecondsSinceEpoch,
+        'event_date':
+            DateTime.now().add(const Duration(days: 10)).millisecondsSinceEpoch,
         'target_donation': 7000000,
         'collected_donation': 2500000,
         'created_at': now,
@@ -140,8 +148,12 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('Hapus event?'),
         content: Text('Hapus "${row['title']}"?'),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Batal')),
-          TextButton(onPressed: () => Navigator.pop(c, true), child: const Text('Hapus')),
+          TextButton(
+              onPressed: () => Navigator.pop(c, false),
+              child: const Text('Batal')),
+          TextButton(
+              onPressed: () => Navigator.pop(c, true),
+              child: const Text('Hapus')),
         ],
       ),
     );
@@ -163,8 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final genderProvider = Provider.of<GenderProvider>(context);
 
-    final String modelPath =
-        genderProvider.gender == "male" ? 'assets/male_basic_walk_30_frames_loop.glb' : 'assets/disney_style_character.glb';
+    final String modelPath = genderProvider.gender == "male"
+        ? 'assets/male_basic_walk_30_frames_loop.glb'
+        : 'assets/disney_style_character.glb';
 
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
@@ -194,7 +207,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           children: [
                             // header top row: stats left + settings icon
                             Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 16.0, vertical: 12),
                               child: Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -202,19 +216,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                   SizedBox(
                                     width: leftColumnWidth,
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        const Text('Daily goals', style: TextStyle(fontSize: 16)),
+                                        const Text('Daily goals',
+                                            style: TextStyle(fontSize: 16)),
                                         const SizedBox(height: 8),
                                         // big number - fixed font size (not FittedBox)
                                         Row(
-                                          crossAxisAlignment: CrossAxisAlignment.end,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.end,
                                           children: const [
-                                            Text('87', style: TextStyle(fontSize: 64, fontWeight: FontWeight.bold, color: Colors.black87)),
+                                            Text('87',
+                                                style: TextStyle(
+                                                    fontSize: 48,
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black87)),
                                             SizedBox(width: 6),
                                             Padding(
-                                              padding: EdgeInsets.only(bottom: 8.0),
-                                              child: Text('%', style: TextStyle(fontSize: 16)),
+                                              padding:
+                                                  EdgeInsets.only(bottom: 8.0),
+                                              child: Text('%',
+                                                  style:
+                                                      TextStyle(fontSize: 16)),
                                             ),
                                           ],
                                         ),
@@ -223,15 +247,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const Row(
                                           children: [
                                             Padding(
-                                              padding: EdgeInsets.only(right: 8.0),
-                                              child: Icon(Icons.local_fire_department_outlined, color: Colors.red, size: 18),
+                                              padding:
+                                                  EdgeInsets.only(right: 8.0),
+                                              child: Icon(
+                                                  Icons
+                                                      .local_fire_department_outlined,
+                                                  color: Colors.red,
+                                                  size: 18),
                                             ),
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text("1,840", style: TextStyle(fontSize: 13)),
-                                                  Text("calories", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                                  Text("1,840",
+                                                      style: TextStyle(
+                                                          fontSize: 13)),
+                                                  Text("calories",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey)),
                                                 ],
                                               ),
                                             ),
@@ -241,15 +276,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const Row(
                                           children: [
                                             Padding(
-                                              padding: EdgeInsets.only(right: 8.0),
-                                              child: Icon(Icons.do_not_step, color: Colors.purple, size: 18),
+                                              padding:
+                                                  EdgeInsets.only(right: 8.0),
+                                              child: Icon(Icons.do_not_step,
+                                                  color: Colors.purple,
+                                                  size: 18),
                                             ),
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text("3,480", style: TextStyle(fontSize: 13)),
-                                                  Text("steps", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                                  Text("3,480",
+                                                      style: TextStyle(
+                                                          fontSize: 13)),
+                                                  Text("steps",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey)),
                                                 ],
                                               ),
                                             ),
@@ -259,15 +303,25 @@ class _HomeScreenState extends State<HomeScreen> {
                                         const Row(
                                           children: [
                                             Padding(
-                                              padding: EdgeInsets.only(right: 8.0),
-                                              child: Icon(Icons.hourglass_bottom, color: Colors.lightBlueAccent, size: 18),
+                                              padding:
+                                                  EdgeInsets.only(right: 8.0),
+                                              child: Icon(
+                                                  Icons.hourglass_bottom,
+                                                  color: Colors.lightBlueAccent,
+                                                  size: 18),
                                             ),
                                             Expanded(
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text("6.5", style: TextStyle(fontSize: 13)),
-                                                  Text("hours", style: TextStyle(fontSize: 12, color: Colors.grey)),
+                                                  Text("6.5",
+                                                      style: TextStyle(
+                                                          fontSize: 13)),
+                                                  Text("hours",
+                                                      style: TextStyle(
+                                                          fontSize: 12,
+                                                          color: Colors.grey)),
                                                 ],
                                               ),
                                             ),
@@ -291,18 +345,26 @@ class _HomeScreenState extends State<HomeScreen> {
                                             IconButton(
                                               icon: const Icon(Icons.settings),
                                               onPressed: () {
-                                                Navigator.push(context, MaterialPageRoute(builder: (context) => const SettingsScreen()));
+                                                Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) =>
+                                                            const SettingsScreen()));
                                               },
                                             ),
                                           ],
                                         ),
                                         // model area with fixed size so the model is visible enough
+                                        // --- REPLACEMENT: bigger 3D model area (make the character larger) ---
                                         SizedBox(
-                                          height: headerHeight - 160,
+                                          // make overall model area taller so the model has room and doesn't get clipped
+                                          height: headerHeight -
+                                              120, // sedikit lebih besar dari sebelumnya
                                           child: Center(
                                             child: SizedBox(
-                                              width: 260,
-                                              height: 260,
+                                              // make the model box larger
+                                              width: 380,
+                                              height: 380,
                                               child: O3D(
                                                 key: ValueKey(modelPath),
                                                 src: modelPath,
@@ -311,10 +373,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                                 autoPlay: true,
                                                 autoRotate: false,
                                                 cameraControls: false,
-                                                cameraTarget: genderProvider.gender == 'male'
-                                                    ? CameraTarget(-.25, 1.5, 0)
-                                                    : CameraTarget(-.25, 1.5, 1.5),
-                                                cameraOrbit: CameraOrbit(0, 90, 1),
+                                                // bring the camera closer (smaller radius / z) so the model appears larger
+                                                cameraTarget: genderProvider
+                                                            .gender ==
+                                                        'male'
+                                                    ? CameraTarget(-.25, 1.5,
+                                                        0.8) // moved camera slightly forward
+                                                    : CameraTarget(
+                                                        -.25, 1.5, 1.2),
+                                                // adjust orbit to a comfortable angle and smaller radius (last param)
+                                                cameraOrbit: genderProvider
+                                                            .gender ==
+                                                        'male'
+                                                    ? CameraOrbit(0, 90,
+                                                        0.8) // tighter radius -> larger appearing model
+                                                    : CameraOrbit(0, 90, 0.9),
                                               ),
                                             ),
                                           ),
@@ -334,11 +407,13 @@ class _HomeScreenState extends State<HomeScreen> {
                     rows.isEmpty
                         ? SliverToBoxAdapter(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 24),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12.0, vertical: 24),
                               child: Card(
                                 child: Padding(
                                   padding: const EdgeInsets.all(24.0),
-                                  child: Center(child: Text('Tidak ada event.')),
+                                  child:
+                                      Center(child: Text('Tidak ada event.')),
                                 ),
                               ),
                             ),
@@ -349,50 +424,88 @@ class _HomeScreenState extends State<HomeScreen> {
                                 final r = rows[index];
                                 final item = CardItem.fromMap(r);
                                 return Padding(
-                                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                                  padding:
+                                      const EdgeInsets.fromLTRB(12, 6, 12, 6),
                                   child: Card(
                                     margin: const EdgeInsets.only(bottom: 6),
-                                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(12)),
                                     child: Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           ClipRRect(
-                                            borderRadius: BorderRadius.circular(8),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
                                             child: SizedBox(
                                               width: 72,
                                               height: 72,
                                               child: item.imageUrl != null
                                                   ? (item.imageUrl!.startsWith('http')
-                                                      ? Image.network(item.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.image))
-                                                      : Image.asset(item.imageUrl!, fit: BoxFit.cover, errorBuilder: (_, __, ___) => const Icon(Icons.image)))
-                                                  : const Icon(Icons.fitness_center, size: 48),
+                                                      ? Image.network(
+                                                          item.imageUrl!,
+                                                          fit: BoxFit.cover,
+                                                          errorBuilder: (_, __, ___) =>
+                                                              const Icon(
+                                                                  Icons.image))
+                                                      : Image.asset(item.imageUrl!,
+                                                          fit: BoxFit.cover,
+                                                          errorBuilder: (_, __,
+                                                                  ___) =>
+                                                              const Icon(
+                                                                  Icons.image)))
+                                                  : const Icon(
+                                                      Icons.fitness_center,
+                                                      size: 48),
                                             ),
                                           ),
                                           const SizedBox(width: 12),
                                           Expanded(
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 8.0),
                                               child: Column(
-                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.start,
                                                 children: [
-                                                  Text(item.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+                                                  Text(item.title,
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold)),
                                                   const SizedBox(height: 6),
-                                                  Text(item.subtitle ?? (item.authorName ?? ''), style: const TextStyle(color: Colors.black54)),
+                                                  Text(
+                                                      item.subtitle ??
+                                                          (item.authorName ??
+                                                              ''),
+                                                      style: const TextStyle(
+                                                          color:
+                                                              Colors.black54)),
                                                   const SizedBox(height: 6),
                                                   if (item.eventDate != null)
-                                                    Text('${item.eventDate!.toLocal().toString().split(' ')[0]} • ${item.categoryName ?? ''}',
-                                                        style: const TextStyle(fontSize: 12, color: Colors.grey)),
+                                                    Text(
+                                                        '${item.eventDate!.toLocal().toString().split(' ')[0]} • ${item.categoryName ?? ''}',
+                                                        style: const TextStyle(
+                                                            fontSize: 12,
+                                                            color:
+                                                                Colors.grey)),
                                                   const SizedBox(height: 6),
-                                                  if (item.collectedDonation != null || item.targetDonation != null)
-                                                    Text('Raised: ${item.collectedDonation?.toStringAsFixed(0) ?? 0} / ${item.targetDonation?.toStringAsFixed(0) ?? 0}'),
+                                                  if (item.collectedDonation !=
+                                                          null ||
+                                                      item.targetDonation !=
+                                                          null)
+                                                    Text(
+                                                        'Raised: ${item.collectedDonation?.toStringAsFixed(0) ?? 0} / ${item.targetDonation?.toStringAsFixed(0) ?? 0}'),
                                                 ],
                                               ),
                                             ),
                                           ),
                                           IconButton(
-                                            icon: const Icon(Icons.location_on, color: Colors.red),
+                                            icon: const Icon(Icons.location_on,
+                                                color: Colors.red),
                                             onPressed: () => _confirmDelete(r),
                                           )
                                         ],
@@ -436,7 +549,8 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Text(
                                 '10:24',
-                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
                               ),
                               Text(
                                 'Morning walk',
@@ -446,7 +560,8 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               Text(
                                 '2 km in 30min',
-                                style: TextStyle(color: Colors.grey, fontSize: 12),
+                                style:
+                                    TextStyle(color: Colors.grey, fontSize: 12),
                               ),
                             ],
                           ),
@@ -475,8 +590,10 @@ class _HomeScreenState extends State<HomeScreen> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: page,
         onTap: (page) {
-          mainPageController.animateToPage(page, duration: const Duration(milliseconds: 500), curve: Curves.ease);
-          textsPageController.animateToPage(page, duration: const Duration(milliseconds: 500), curve: Curves.ease);
+          mainPageController.animateToPage(page,
+              duration: const Duration(milliseconds: 500), curve: Curves.ease);
+          textsPageController.animateToPage(page,
+              duration: const Duration(milliseconds: 500), curve: Curves.ease);
 
           if (page == 0) {
             o3dController.cameraTarget(-.25, 1.5, 1.5);
@@ -499,9 +616,12 @@ class _HomeScreenState extends State<HomeScreen> {
         showUnselectedLabels: false,
         showSelectedLabels: false,
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.analytics_outlined), label: 'home'),
-          BottomNavigationBarItem(icon: Icon(Icons.timer_outlined), label: 'home'),
-          BottomNavigationBarItem(icon: Icon(Icons.person_outline), label: 'home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.analytics_outlined), label: 'home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.timer_outlined), label: 'home'),
+          BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline), label: 'home'),
         ],
       ),
     );
